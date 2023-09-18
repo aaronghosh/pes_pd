@@ -1,4 +1,4 @@
-# Open Source EDA Workshop - Day 1
+# Day 1
 
 Welcome to the VLSI PHYSICAL DESIGN COURSE. This is the openlane workshop - Day 1. In this workshop, we will explore the inception of open-source EDA, Opennlane, and Skywater 130.
 
