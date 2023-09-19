@@ -1,10 +1,10 @@
-# Day 2: Integrated Circuit Design - Floorplanning, Libraries, and Cell Design
+# Day 2: Floorplanning, Libraries, and Cell Design
 
-Welcome to Day 2 of our comprehensive guide to integrated circuit design. Today, we'll dive deep into key aspects of the design process, including floorplanning, library usage, and standard cell characterization. These foundational principles are critical for creating efficient and reliable semiconductor devices.
+Welcome to Day 2 of the PD Openlane workshop. Today, we'll dive deep into key aspects of the design process, including floorplanning, library usage, and standard cell characterization. These foundational principles are critical for creating efficient and reliable semiconductor devices.
 
 ## Chip Floorplanning
+![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ef583074-b184-4270-aed7-e9e017e0e372)
 
-![Chip Floorplan](insert_image_url_here)
 
 ### Understanding Chip Floorplan
 
