@@ -79,7 +79,7 @@ Cell design is a critical part of creating standard cell libraries, which consis
 
 ### Standard Cell Characterization
 
-![Cell Design Flow](insert_image_url_here)
+![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ca5277d4-585d-45c9-86e6-8de518d978a9)
 
  ## Cell design is done in 3 parts:
 
