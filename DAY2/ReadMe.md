@@ -23,17 +23,18 @@ Chip floorplanning is the initial step in designing integrated circuits (ICs). I
 ### Floorplanning in OpenLane
 
 After the synthesis phase, we proceed to floorplanning using the OpenLane toolchain. To initiate floorplanning, use the `run_floorplan` command. This process results in a floorplan layout that can be visualized using the Magic tool.
-
-Before running floorplan, lets look into the switches available for the floorplan stage
-
+Look at the switches available for the floorplan stage
+Then make changes in the config.tcl file
 ## Changes made in the config.tcl for floorplan purpose:
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/35925fd5-acec-47f3-9ded-5c2c6bcbb8e7)
+
+Go to the correct directory and run ```run_floorplan``` and see results
 
 ## Now in openlane, enter run_floorplan and the results will be updated at the runs folder
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/9c3ac2c1-2ac4-462d-a6d2-66020954233e)
 
 
-## (0 0) in DIE AREA Indicates top-left corner co-ordinates and (660.685 671.405) indicates bottom-right corner of the die in micro-meters
+## For seeing Layouts of floorplans we use Magic functions
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ffed12de-c9c6-4cbf-bc15-79f7e404fe01)
 
 To view the layout of the floorplan, use the command 
@@ -43,8 +44,6 @@ magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs
 ```
 
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ffed12de-c9c6-4cbf-bc15-79f7e404fe01)
-
-![image](https://github.com/aaronghosh/pes_pd/assets/124378527/bd20f182-a675-4d4f-9e45-2d174a802f58)
 
 ## Library Binding and Placement
 ### 1.### Library Binding and Initial Placement
