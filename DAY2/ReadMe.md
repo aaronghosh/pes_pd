@@ -1,42 +1,28 @@
-# Good Floorplan vs Bad Floorplan and Introduction to library cells
-## Chip Floorplanning Considerations
-1. Define Width and height of core and die
+# Day 2: Integrated Circuit Design - Floorplanning, Libraries, and Cell Design
 
-    Die : Structure that consists of core which is a small semiconductor material on which the fundamental circuit is fabricated.
-    core : Structire that contains primary logic and functional components.
+Welcome to Day 2 of our comprehensive guide to integrated circuit design. Today, we'll dive deep into key aspects of the design process, including floorplanning, library usage, and standard cell characterization. These foundational principles are critical for creating efficient and reliable semiconductor devices.
 
-Whenever we come across the concepts of core and die, Utilisation factor plays an important role. UTILISATION FACTOR = Area Occupied by the Netlist / Area of the core (usually 50%-70%) ASPECT RATIO = Height / Width (1 = square, others = rectangle)
-2. Define Location of Pre-Placed cells
+## Chip Floorplanning
 
-pre-placed cells : memories, clock gating cells, comparator, mux etc
+![Chip Floorplan](insert_image_url_here)
 
-    The arrangement of these IPs on chip is called FLOORPLANNING
-    These IPs have user defined locations and hence are placed in chip before automated placement and routing. Therefore called pre-placed cells.
-    Automated PnR tool places the remaining logical cells in design onto chip.
+### Understanding Chip Floorplan
 
-3. De-coupling capacitors
+Chip floorplanning is the initial step in designing integrated circuits (ICs). It involves defining the arrangement and placement of various components, such as transistors, logic gates, memory cells, and interconnects, on a silicon wafer. Here are some important considerations:
 
-Problem We know that all the combinational blocks are connected to Vdd and Vss for their operation. But when there is a large circuit with many resistors, then The capacitors in the logic might not get fully charged as there occurs voltage deop due to wire metal and the resistors present along the path. So after voltage drop, if the voltage obtained by the logic is within noise margin, then it works well but what if it doesn't?
+1. **Size and Location of Pre-Placed Cells**: Pre-placed cells, including memories, clock gating cells, comparators, and muxes, are manually positioned within the chip's layout. Two key factors come into play:
+   - **Utilization Factor**: This represents the ratio of the area utilized by the netlist to the total core area (typically aiming for 50%-70%).
+   - **Aspect Ratio**: Aspect ratio is the ratio of height to width, and it affects the overall chip shape (e.g., square or rectangle).
 
-Solution We use De-Coupling capacitors (A huge capacitance with voltage equal to that of supply voltage) that is placed close to the combinational logic. When the switching activity takes place, it detatches the circuit from main supply and this capacitor acts as power supply.
+2. **De-coupling Capacitors**: In larger circuits with numerous resistors, voltage drops can impact the charging of capacitors. The solution is to employ de-coupling capacitors, which ensure stable voltage levels, even in the presence of voltage fluctuations due to wire resistance.
 
-The local communication has been successfully eshtablished with the solution mentioned above. The global communication is taken care by power planning.
-4. Power Planning
+3. **Power Planning**: Power planning during floorplanning is crucial for reducing noise in digital circuits caused by voltage droop and ground bounce. This phase includes the creation of a robust Power Distribution Network (PDN) to maintain a stable power supply.
 
-    Power planning during the Floorplanning phase is essential to lower noise in digital circuits attributed to voltage droop and ground bounce. Coupling capacitance is formed between interconnect wires and the substrate which needs to be charged or discharged to represent either logic 1 or logic 0.
-    When a transition occurs on a net, charge associated with coupling capacitors may be dumped to ground. If there are not enough ground taps charge will accumulate at the tap and the ground line will act like a large resistor, raising the ground voltage and lowering our noise margin. To bypass this problem a robust PDN with many power strap taps are needed to lower the resistance associated with the PDN.
+4. **Pin Placement**: Efficient pin placement is essential to minimize buffering, enhance power efficiency, and reduce timing delays. Typically, input pins are placed on the left, output pins on the right, and clock pins with a larger size to minimize resistance.
 
-5. Pin Placement
+### Floorplanning in OpenLane
 
-    Pin placement is an essential part of floorplanning to minimize buffering and improve power consumption and timing delays.
-    We usually place input pins on the left and output pins on the right
-    for primary inputs and outputs, pin size may be small and for clock, the pin size would be large because clock should drive many cells so we need to make sure that the resistance is less.
-    larger the area, lesser the resistance.
-    Placement blockage is done inorder to makesure that no logic is placed along the area where the pin placement is carried out.
-
-## Floorplan
-
-run_floorplan
+After the synthesis phase, we proceed to floorplanning using the OpenLane toolchain. To initiate floorplanning, use the `run_floorplan` command. This process results in a floorplan layout that can be visualized using the Magic tool.
 
 Before running floorplan, lets look into the switches available for the floorplan stage
 
@@ -46,71 +32,81 @@ Before running floorplan, lets look into the switches available for the floorpla
 ## Now in openlane, enter run_floorplan and the results will be updated at the runs folder
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/9c3ac2c1-2ac4-462d-a6d2-66020954233e)
 
-(0 0) in DIE AREA Indicates top-left corner co-ordinates and (660.685 671.405) indicates bottom-right corner of the die in micro-meters
+
+## (0 0) in DIE AREA Indicates top-left corner co-ordinates and (660.685 671.405) indicates bottom-right corner of the die in micro-meters
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ffed12de-c9c6-4cbf-bc15-79f7e404fe01)
+
 To view the layout of the floorplan, use the command 
 
-
+```bash
 magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.floorplan.def &
-
+```
 
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/ffed12de-c9c6-4cbf-bc15-79f7e404fe01)
 
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/bd20f182-a675-4d4f-9e45-2d174a802f58)
 
 ## Library Binding and Placement
-### 1. Bind the netlist with physical cells
+### 1.### Library Binding and Initial Placement
 
     Library consists of cells, sizes of cells, various flavours and shapes of the cells, Timing, Power and delay information.
     Now, we have the floorplan, netlist and representation of components of netlist in library
     place all the components such that the timing is not disturbed and distribute them properly.
 
-### 2. Optimize Placement
+    Library binding and initial placement are integral parts of translating logical descriptions of a design into predefined standard cells. Here's what these steps entail:
+
+- **Netlist Binding**: This process involves matching each component within the design to specific shapes defined within the library. It's about finding the best fit for each component.
+- **Initial Placement**: During this phase, the components, along with their respective functionalities, are arranged efficiently on the floorplan. The goal is to minimize delays strategically.
+### 2. Placement Optimization
 
     Some components may be located very far to their inputs which can disturb signal integrity (as wire length increases, RC value increases). Therefore we use repeaters(may be series of buffers) inorder to avoid signal loss but area loss comes into picture.
     Assuming that all the clock signals are working at ideal rate, we do the timing analysis if the current placement works good.
 
+ Placement optimization focuses on refining the physical arrangement of components within an integrated circuit. This phase assumes ideal clock signals, allowing designers to concentrate on enhancing the physical layout without dealing with timing issues related to the clock signal.
+
+
 ### 3. Placement
-
+Use the `run_placement` command to execute placement and visualize the layout in the Magic tool.
+```
 run_placement
-
+```
 ![image](https://github.com/aaronghosh/pes_pd/assets/124378527/05225ee3-b985-4dbf-8825-ff1ed73c7710)
 
-## Cell Design Flow
 
-Cell design is done in 3 parts:
+## Cell Design and Standard Characterization Flow
 
-    Inputs - PDKs (Process design kits), DRC & LVS rules, SPICE models, library & user-defined specs.
-    Design Steps - Design steps of cell design involves Circuit Design, Layout Design, Characterization. The software GUNA used for characterization. The characterization can be classified as Timing characterization, Power characterization and Noise characterization.
-    Outputs - Outputs of the Design are CDL (Circuit Description Language), GDSII, LEF, extracted Spice netlist (.cir), timing, noise, power.libs, function.
+Cell design is a critical part of creating standard cell libraries, which consist of reusable components like logic gates and flip-flops. These libraries play a fundamental role in integrated circuit design.
 
-Standard cell Charachterization Flow
+### Standard Cell Characterization
 
-Standard Cell Libraries consist of cells with different functionality/drive strengths. These cells need to be characterized by liberty files to be used by synthesis tools to determine optimal circuit arrangement. The open-source software GUNA is used for characterization. Characterization is a well-defined flow consisting of the following steps:
+![Cell Design Flow](insert_image_url_here)
 
-    Link Model File of CMOS containing property definitions
-    Specify process corner(s) for the cell to be characterized
-    Specify cell delay and slew thresholds percentages
-    Specify timing and power tables
-    Read the parasitic extracted netlist
-    Apply input or stimulus
-    Provide necessary simulation commands
+ ## Cell design is done in 3 parts:
 
-General Timing characterization parameters
-Timing threshold definitions
+ 1.   **Inputs**- PDKs (Process design kits), DRC & LVS rules, SPICE models, library & user-defined specs.
+ 2.   **Design Steps** - Design steps of cell design involves Circuit Design, Layout Design, Characterization. The software GUNA used for characterization. The characterization can be classified as Timing characterization, Power characterization and Noise characterization.
+ 3.   **Outputs** - Outputs of the Design are CDL (Circuit Description Language), GDSII, LEF, extracted Spice netlist (.cir), timing, noise, power.libs, function.
 
-    slew_low_rise_thr - 20% from bottom power supply when the signal is rising
-    slew_high_rise_thr - 20% from top power supply when the signal is rising
-    slew_low_fall_thr - 20% from bottom power supply when the signal is falling
-    slew_high_fall_thr - 20% from top power supply when the signal is falling
-    in_rise_thr - 50% point on the rising edge of input
-    in_fall_thr - 50% point on the falling edge of input
-    out_rise_thr - 50% point on the rising edge of ouput
-    out_fall_thr - 50% point on the falling edge of ouput
+Standard cell characterization involves the following steps:
 
-These are the main parameters that we use to calculate factors such as propogation delay and transition time
+1. **Associating a Model File**: CMOS model files containing property definitions are linked to the cells.
 
-    propogation delay - time(out_thr) - time(in_thr)
-    Transition time - time(slew_high_rise_thr) - time(slew_low_rise_thr)
+2. **Defining Process Corners**: Different process corners are defined for the target cell's characterization to account for variations.
 
+3. **Thresholds for Cell Delay and Slew**: Thresholds such as slew_low_rise_thr, slew_high_rise_thr, slew_low_fall_thr, and slew_high_fall_thr are set to define the timing characteristics of the cell.
+
+4. **Timing and Power Tables**: Tables for timing and power are specified to characterize the cell's behavior under various conditions.
+
+5. **Incorporating Parasitic-Extracted Netlist**: The netlist with parasitic elements is incorporated to simulate the cell's performance accurately.
+
+6. **Applying Stimuli and Simulations**: Input signals are applied to the cell, and simulations are performed to characterize its behavior.
+
+### Key Timing Thresholds
+
+- **Propagation Delay**: Calculated as time(out_thr) - time(in_thr), propagation delay is a critical parameter for circuit performance.
+- **Transition Time**: The difference between time(slew_high_rise_thr) and time(slew_low_rise_thr) is known as transition time.
+
+## Conclusion
+
+Day 2 has been a deep dive into the world of integrated circuit design. We've explored the intricacies of chip floorplanning, library usage, and standard cell characterization. These concepts form the foundation of semiconductor device design, enabling the creation of efficient and reliable ICs.
 
